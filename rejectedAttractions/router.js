@@ -2,7 +2,8 @@ const { Router } = require("express");
 const router = new Router();
 const RejectedAttractions = require("./model");
 
-router.post("/attraction", (req, res, next) => {
+router.post("/rejectattraction", (req, res, next) => {
+  const name = req.body.name;
   RejectedAttractions.create({
     name: name
   })
