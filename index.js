@@ -17,8 +17,11 @@ app.use(cityRouter);
 const categoryRouter = require("./category/router");
 app.use(categoryRouter);
 
-const placesofInterestsRouter = require("./placesofinterests/router");
-app.use(placesofInterestsRouter);
+const attractionsRouter = require("./attractions/router");
+app.use(attractionsRouter);
+
+const rejectedAttractionsRouter = require("./rejectedAttractions/router");
+app.use(rejectedAttractionsRouter);
 
 //require("./dbseed");
 

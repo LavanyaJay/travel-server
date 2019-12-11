@@ -1,7 +1,7 @@
 const db = require("./db");
 const City = require("./city/model");
 const Category = require("./category/model");
-const PlacesOfInterests = require("./placesOfInterests/model");
+const Attractions = require("./Attractions/model");
 
 db.sync({ force: true }).then(() => {
   // Seeding a City
@@ -42,10 +42,10 @@ db.sync({ force: true }).then(() => {
         name: "Adventure"
       }
     ]),
-    PlacesOfInterests.destroy({
+    Attractions.destroy({
       where: {}
     }),
-    PlacesOfInterests.bulkCreate([
+    Attractions.bulkCreate([
       {
         placeName: "Colosseum",
         placeDesc: "",
