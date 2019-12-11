@@ -2,8 +2,8 @@ const Sequelize = require("sequelize");
 const db = require("../db");
 const City = require("../city/model");
 const Category = require("../category/model");
-const PlacesOfInterests = db.define(
-  "placesofinterests",
+const Attractions = db.define(
+  "attractions",
   {
     placeName: {
       type: Sequelize.STRING
@@ -31,11 +31,11 @@ const PlacesOfInterests = db.define(
     }
   },
   {
-    tableName: "placesofinterests"
+    tableName: "attractions"
   }
 );
-City.hasMany(PlacesOfInterests);
-PlacesOfInterests.belongsTo(City);
-Category.hasMany(PlacesOfInterests);
-PlacesOfInterests.belongsTo(Category);
-module.exports = PlacesOfInterests;
+City.hasMany(Attractions);
+Attractions.belongsTo(City);
+Category.hasMany(Attractions);
+Attractions.belongsTo(Category);
+module.exports = Attractions;
