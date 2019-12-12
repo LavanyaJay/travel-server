@@ -6,6 +6,7 @@ const Op = Sequelize.Op;
 const Attractions = require("./model");
 const City = require("../city/model");
 const RejectedAttractions = require("../rejectedAttractions/model");
+const Itinerary = require("../itinerary/model");
 
 router.post("/itinerary", async (req, res, next) => {
   console.log("inside");
@@ -22,11 +23,13 @@ router.post("/itinerary", async (req, res, next) => {
 
   const startTime = req.body.startTime;
   const endTime = req.body.endTime;
-  const timeAvailable = parseInt(
-    endTime.slice(0, 2) * 60 +
-      endTime.slice(3, 5) -
-      (startTime.slice(0, 2) * 60 + startTime.slice(3, 5) * 60)
-  );
+  console.log("start:", startTime);
+  console.log("start:", endTime);
+
+  const timeAvailable =
+    parseInt(endTime.slice(0, 2) * 60) +
+    parseInt(endTime.slice(3, 5)) -
+    (parseInt(startTime.slice(0, 2) * 60) + parseInt(startTime.slice(3, 5)));
   console.log("timeAvailable: ", timeAvailable);
 
   //Get today
@@ -56,6 +59,11 @@ router.post("/itinerary", async (req, res, next) => {
 
   let time = 0;
   let selected = [];
+  let itStartTime = 0;
+  let itEndTime = 0;
+  /* parseInt(startTime.slice(0, 2) * 60) + parseInt(startTime.slice(3, 5)); */
+  console.log("Ity startTime first: ", itStartTime);
+  console.log("Ity endTime first: ", itEndTime);
 
   //Loop through preferences
   for (let i = 0; i < categoryIdAll.length; i++) {
@@ -83,31 +91,49 @@ router.post("/itinerary", async (req, res, next) => {
       const max = attractionsForpreference.reduce(function(prev, current) {
         return prev.rating > current.rating ? prev : current;
       });
+      console.log("place: ", max.dataValues.placeName);
 
-      const durationToSee = parseInt(
-        max.dataValues.duration.slice(0, 2) * 60 +
-          max.dataValues.duration.slice(3, 5)
-      );
+      const durationToSee =
+        parseInt(max.dataValues.duration.slice(0, 2) * 60) +
+        parseInt(max.dataValues.duration.slice(3, 5));
+
       console.log("totalTime: ", time + durationToSee);
 
       if (time + durationToSee < timeAvailable) {
         selected.push(max);
+
+        //Add the record to itinerary(placeName, startTime and endTime)
+        if (selected.length === 1) {
+          itStartTime =
+            parseInt(startTime.slice(0, 2) * 60) +
+            parseInt(startTime.slice(3, 5));
+          itEndTime = itStartTime;
+        } else {
+          itStartTime = itEndTime + 30;
+        }
+
+        console.log("Ity startTime: ", itStartTime);
+
+        itEndTime = itStartTime + durationToSee;
+        console.log("Ity endTime: ", itEndTime);
+
+        const dbStartTimeHH = Math.floor(itStartTime / 60);
+        const dbStartTimeMM = itStartTime % 60;
+        const dbEndTimeHH = Math.floor(itEndTime / 60);
+        const dbEndTimeMM = itEndTime % 60;
+        const dbStartTime = dbStartTimeHH + ":" + dbStartTimeMM + ":" + "00";
+        const dbEndTime = dbEndTimeHH + ":" + dbEndTimeMM + ":" + "00";
+        const itRec = await Itinerary.create({
+          placeName: max.dataValues.placeName,
+          fromTime: dbStartTime,
+          toTime: dbEndTime
+        });
       }
     } //if
   } //for
 
-  //const validAttractions =
-
-  //aHours = endTime - startTime (users)
-  //tHours = 0;
-
-  //L1:for each category
-  //     L2:pick one attraction with highest rating
-  //            if tHours+durationToSee < aHours
-  //                 tHours = tHours+durationToSee
-  //            else
-  //                 continue to next attraction in same category (L2)
-
   return res.json(selected);
 });
+module.exports = router;
+
 module.exports = router;
