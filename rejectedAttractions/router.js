@@ -4,6 +4,7 @@ const RejectedAttractions = require("./model");
 
 router.post("/rejectattraction", (req, res, next) => {
   const name = req.body.name;
+  console.log(name);
   RejectedAttractions.create({
     name: name
   })
