@@ -23,6 +23,9 @@ app.use(attractionsRouter);
 const rejectedAttractionsRouter = require("./rejectedAttractions/router");
 app.use(rejectedAttractionsRouter);
 
+const itineraryRouter = require("./itinerary/router");
+app.use(itineraryRouter);
+
 //require("./dbseed");
 
 app.listen(port, () => {
