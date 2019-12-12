@@ -109,7 +109,7 @@ db.sync({ force: true }).then(() => {
       {
         placeName: "National Roman Museums",
         placeDesc:
-          "https://static.ticketbar.eu/rome/classificaties/ancient-rome/nationalromanmuseum/nationalromanmuseum_grid-1510574885.jpg",
+          "The National Roman Museum is a museum, with several branches in separate buildings throughout the city of Rome, Italy. It shows exhibits from the pre- and early history of Rome, with a focus on archaeological findings from the period of Ancient Rome.",
         placeImage:
           "https://media.tacdn.com/media/attractions-splice-spp-674x446/06/6f/56/59.jpg",
         openDays: [

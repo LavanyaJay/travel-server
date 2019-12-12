@@ -8,7 +8,7 @@ const City = require("../city/model");
 const RejectedAttractions = require("../rejectedAttractions/model");
 const Itinerary = require("../itinerary/model");
 
-router.post("/itinerary", async (req, res, next) => {
+router.post("/attraction", async (req, res, next) => {
   console.log("inside");
   const categoryIdAll = req.body.checked.map(id => parseInt(id));
   console.log("preferences: ", categoryIdAll);
@@ -64,7 +64,14 @@ router.post("/itinerary", async (req, res, next) => {
   /* parseInt(startTime.slice(0, 2) * 60) + parseInt(startTime.slice(3, 5)); */
   console.log("Ity startTime first: ", itStartTime);
   console.log("Ity endTime first: ", itEndTime);
-
+  //Delete the existing itinerary
+  const itinerary = await Itinerary.findAll();
+  itinerary
+    ? await Itinerary.destroy({
+        where: {},
+        truncate: "true"
+      })
+    : null;
   //Loop through preferences
   for (let i = 0; i < categoryIdAll.length; i++) {
     let attractionsForpreference = await Attractions.findAll({
@@ -126,7 +133,8 @@ router.post("/itinerary", async (req, res, next) => {
         const itRec = await Itinerary.create({
           placeName: max.dataValues.placeName,
           fromTime: dbStartTime,
-          toTime: dbEndTime
+          toTime: dbEndTime,
+          attractionId: max.dataValues.id
         });
       }
     } //if

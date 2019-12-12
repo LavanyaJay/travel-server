@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../db");
 const City = require("../city/model");
 const Category = require("../category/model");
+const Itinerary = require("../itinerary/model");
 const Attractions = db.define(
   "attractions",
   {
@@ -36,6 +37,11 @@ const Attractions = db.define(
 );
 City.hasMany(Attractions);
 Attractions.belongsTo(City);
+
 Category.hasMany(Attractions);
 Attractions.belongsTo(Category);
+
+Attractions.hasMany(Itinerary);
+Itinerary.belongsTo(Attractions);
+
 module.exports = Attractions;
