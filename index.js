@@ -6,9 +6,9 @@ const port = 4000;
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 app.use(jsonParser);
-
+app.use(bodyParser.urlencoded({ extended: false }));
 const cors = require("cors");
-const corsMiddleware = cors();
+const corsMiddleware = cors({ origin: true });
 app.use(corsMiddleware);
 
 const cityRouter = require("./city/router");
