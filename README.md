@@ -87,6 +87,7 @@ User can test the following endpoints in the backend by making requests via http
 
 - The current algorithm only works for 00 hrs to 24 hrs.It need to be enhanced to work across days as well.
 - The current algorithm assumes 30 mins as the time taken to move from one attraction to another. This requires a change as well, maybe getting the time between locations from an api.
+- Currently dbseed file holds test data only for one city - "Rome". Need to add more data for all cities for testing.
 
 ## Contributors
 
