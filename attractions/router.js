@@ -39,7 +39,7 @@ router.post("/attraction", async (req, res, next) => {
 
   //Extract all records for the city with required preferences and within time
 
-  const allAttractions = await Attractions.findAll({
+  let allAttractions = await Attractions.findAll({
     where: {
       cityId: cityId.dataValues.id,
       categoryId: {
@@ -71,42 +71,49 @@ router.post("/attraction", async (req, res, next) => {
       })
     : null;
 
-  if (allAttractions.length !== 0) {
+  if (allAttractions.length > 0) {
     let time = 0;
     let selected = [];
     let itStartTime = 0;
     let itEndTime = 0;
 
-    //Loop through preferences
-    for (let i = 0; i < categoryIdAll.length; i++) {
-      let attractionsForpreference = await Attractions.findAll({
-        where: {
-          categoryId: categoryIdAll[i]
-        }
-      });
+    const rejectedAttractions = await RejectedAttractions.findAll({});
 
-      //Filter attractions that are rejected by the user
-      const rejectedAttractions = await RejectedAttractions.findAll({});
-
-      for (let i = 0; i < rejectedAttractions.length; i++) {
-        for (let j = 0; j < attractionsForpreference.length; j++) {
-          if (
-            attractionsForpreference[j].placeName ===
-            rejectedAttractions[i].name
-          ) {
-            attractionsForpreference.splice(j, 1);
-          }
+    //Filter attractions that are rejected by the user
+    for (let i = 0; i < rejectedAttractions.length; i++) {
+      for (let j = 0; j < allAttractions.length; j++) {
+        if (allAttractions[j].placeName === rejectedAttractions[i].name) {
+          allAttractions.splice(j, 1);
         }
       }
+    }
+    //if attrations after filter is null, then return empty
+    const attractionsForpreference = allAttractions;
+    if (attractionsForpreference.length === 0) {
+      return res.json(0);
+    }
 
-      //Exit if no records exist for a selected preference
-      if (attractionsForpreference.length > 0) {
-        const max = attractionsForpreference.reduce(function(prev, current) {
-          return prev.rating > current.rating ? prev : current;
-        });
+    //Loop through preferred attraction and build the itinerary
+    for (let i = 0; i < categoryIdAll.length; i++) {
+      //filter the attractions by current category
+      const attractionsForCurrentCategory = attractionsForpreference.filter(
+        attraction => attraction.categoryId === categoryIdAll[i]
+      );
 
+      //sort it based on rating : highest -> lowest
+      //points.sort(function(a, b){return a - b});
+      attractionsForCurrentCategory.sort(function(a, b) {
+        return b.rating - a.rating;
+      });
+
+      //add exactly 1 attraction to itinerrary
+      for (let j = 0; j < attractionsForCurrentCategory.length; j++) {
+        const max = attractionsForCurrentCategory[j];
         const durationToSee = convertToMinutes(max.dataValues.duration);
 
+        //check if new attraction will fit in currently available time
+        //if yes, then add to iti ELSE go to next attraction in the same
+        //category
         if (time + durationToSee <= timeAvailable) {
           selected.push(max);
           time += durationToSee + 30;
@@ -128,10 +135,11 @@ router.post("/attraction", async (req, res, next) => {
             toTime: dbEndTime,
             attractionId: max.dataValues.id
           });
-        }
-      } //if
-    } //for
 
+          break;
+        } //if < timeavailable
+      } //for j
+    } //for i
     return res.json(selected);
   } else {
     return res.json(0);
