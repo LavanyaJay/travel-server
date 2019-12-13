@@ -28,7 +28,7 @@ const Attractions = db.define(
       type: Sequelize.TIME
     },
     rating: {
-      type: Sequelize.INTEGER
+      type: Sequelize.DECIMAL
     }
   },
   {
