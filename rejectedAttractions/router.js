@@ -11,4 +11,14 @@ router.post("/rejectattraction", (req, res, next) => {
     .then(rejected => res.json(rejected))
     .catch(err => next(err));
 });
+
+router.delete("/deleteReject", (req, res, next) => {
+  RejectedAttractions.destroy({
+    where: {},
+    truncate: "true"
+  })
+    .then(rejected => res.json(rejected))
+    .catch(err => next(err));
+});
+
 module.exports = router;
